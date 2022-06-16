@@ -8,6 +8,7 @@ const webpack = require('webpack-stream');
 const sass = require('gulp-sass')(require('sass'));
 const Utilities = require('./utilities').Utilities;
 const argv = require('yargs').argv;
+const path = require('path');
 const {prod: isProd, firefox: isFirefox, pkg: pkgPath, config} = argv;
 
 /** helper method to ensure array type */
@@ -49,8 +50,10 @@ const script = ({src, name, mode}, done = _ => true) => {
         devtool: isProd ? undefined : 'cheap-source-map'
     };
 
+    const customWebpackOptions = require(path.resolve('webpack.config.js'));
+
     return gulp.src(src)
-        .pipe(webpack(webpackOptions))
+        .pipe(webpack({...webpackOptions, ...customWebpackOptions}))
         .on('error', (err) => {
             console.log(err.toString());
             this.emit('end');
